@@ -1,0 +1,281 @@
+AWK programming::
+
+=> By default AWK is available in GNU/Linux destributions.You can use where command to check whether it is present on your system or not.
+In case you don't have AWK, then install it as follows:
+sudo apt-get install awk
+
+=> AWK is used to stream processing, where the basic unit is string. It considers a text file as a collection of fields and records.
+Each row is record and record in collection of fields.
+
+=> Syntex of AWK:
+awk [options] 'pattern {action}' input_file
+Bascally awk program consists of patterns and actions.If pattern is missing the action is applied to all line, or else, if the action is missing , the matched line is printed.There are two types of buffer used in AWK- the record buffer and field buffer. The letter is denoted as $1,$2,...,$n, where n indicates the field number.The record buffer is denoted as $0, which indicates whole record.
+
+=> Simple Example::
+
+Love@!=Love:~/practice$ cat test
+Name Suarname Roll_number Rank
+Rahul Saha 23 3
+Ketan Bhagat 22 8
+Rajni Kant 1 1
+Sameer Anqari 5 -2
+
+Love@!=Love:~/practice$ awk '{print $1}' test
+Name
+Rahul
+Ketan
+Rajni
+Sameer
+
+Love@!=Love:~/practice$ awk '{print $1,$3}' test
+Name Roll_number
+Rahul 23
+Ketan 22
+Rajni 1
+Sameer 5
+
+Love@!=Love:~/practice$
+
+=> AWK process flow.
+AWK scripts devided in following parts.
+BEGIN {begin actions}
+Patterns {actions}
+END {ends actions}
+
+BEGIN is the part of the script where variables can be intialised and report heading can be created.The processing body contains the data that needs to be processed, like a loop. END or the post-processing part analyses or prints the data that has been processed.
+
+=> Example of the AWK script:
+
+-test file.
+
+Love@!=Love:~/practice$ cat test
+Name Surname Maths Physics Chemistry
+Rahul shah 56 78 82
+kapil sharma 89 43 76
+Naveen hegde 99 96 82
+Charmi joshi 82 80 85
+-Write awk script:
+
+Love@!=Love:~/practice$ cat awkscript
+#Begin Processing
+BEGIN {print "-----------Find total marks and average-----------------"}
+{
+
+#boady Procesing
+tot=$3+$4+$5
+avg=tot/3
+print "Total of " $2 " " $1 ":",tot
+print "Avg of " $2 " " $1 ":",avg
+}
+
+#End processing
+
+END {print "--------Script Finished--------"}
+
+-Run the script on test file.
+
+Love@!=Love:~/practice$ awk -f awkscript test
+-----------Find total marks and average-----------------
+Total of Surname Name: 0
+Avg of Surname Name: 0
+Total of shah Rahul: 216
+Avg of shah Rahul: 72
+Total of sharma kapil: 208
+Avg of sharma kapil: 69.3333
+Total of hegde Naveen: 277
+Avg of hegde Naveen: 92.3333
+Total of joshi Charmi: 247
+Avg of joshi Charmi: 82.3333
+--------Script Finished--------
+
+-Problem with the NR can be solved by below script.(Don't be panic, you will get idea after completing whole document)
+
+#Begin Processing
+BEGIN {print "-----------Find total marks and average-----------------"}
+{
+
+#boady Procesing
+if(NR != 1) {
+tot=$3+$4+$5
+avg=tot/3
+print "Total of " $2 " " $1 ":",tot
+print "Avg of " $2 " " $1 ":",avg
+}
+}
+
+#End processing
+
+END {print "--------Script Finished--------"}
+
+=>Regular expressions in AWK.
+awk required two operators while writing regex-
+match(~)
+does not match (!~).
+Regular expression must be enclosed with /slashes/.
+
+-Example:
+- Match case with above test file.
+Love@!=Love:~/practice$ awk '$0 ~ /^[Kk]apil/' test
+kapil sharma 89 43 76
+
+- Not match case.
+Love@!=Love:~/practice$ awk '$0 !~ /^[Kk]apil/' test
+Name Surname Maths Physics Chemistry
+Rahul shah 56 78 82
+Naveen hegde 99 96 82
+Charmi joshi 82 80 85
+
+=> AWK supports following operators.
+Arithmetic operators: +,-,*,%,/,^
+Relational Operators: >,>=,<,<=,==,!=,...
+Logical operaors: &&,||,!
+
+Example: Consider above test file again.
+Love@!=Love:~/practice$ awk '$2 == "joshi" && $3 > 80 {print}' test
+Charmi joshi 82 80 85
+
+Love@!=Love:~/practice$ awk '$3+$4+$5 > 218 {print}' test
+Naveen hegde 99 96 82
+Charmi joshi 82 80 85
+
+=> System variables used by AWK.
+FS = Field Separator( derfault = space)
+RS = Record Separator( default = '\n')
+NF = Number of Fields in current Record
+NR = Number of Current Record
+OFS = Output Field separator (default = space)
+ORS = Output Record separator ( default = '\n')
+FILENAME = Current file Name
+
+--Example for FS and OFS:
+Love@!=Love:~/practice$ cat test1
+Name,Surname,Maths,Physics,Chemistry
+Rahul,shah,56,78,82
+kapil,sharma,89,43,76
+Naveen,hegde,99,96,82
+Charmi,joshi,82,80,85
+
+Love@!=Love:~/practice$ cat awkscript
+#Begin Processing
+BEGIN {FS = ","; OFS= "-"; print "-----Script started------"}
+{
+
+#boady Procesing
+print $1 " " $3
+}
+
+#End processing
+
+END {print "--------Script Finished--------"}
+
+Love@!=Love:~/practice$ awk -f awkscript test1
+-----Script started------
+Name Maths
+Rahul 56
+kapil 89
+Naveen 99
+Charmi 82
+--------Script Finished--------
+
+Love@!-Love:~/practice$ awk '{OFS="-"; print $1 , $4 }' test
+Name-Physics
+Rahul-78
+kapil-43
+Naveen-96
+Charmi-80
+
+--Example of NR:
+- Script:
+#Begin Processing
+BEGIN {FS = ","; OFS= "-"; print "-----Script started------"}
+{
+
+#boady Procesing
+if( NR >= 4 && NR <= "END")
+{
+print $1 " " $3
+}
+}
+
+#End processing
+
+END {print "--------Script Finished--------"}
+
+Love@!=Love:~/practice$ awk -f awkscript test1
+-----Script started------
+Naveen 99
+Charmi 82
+--------Script Finished--------
+
+--Example of RS:
+
+Love@!=Love:~/practice$ cat test1
+Name,Surname,Maths,Physics,Chemistry#Rahul,shah,56,78,82#kapil,sharma,89,43,76#Naveen,hegde,99,96,82#Charmi,joshi,82,80,85#
+
+Love@!=Love:~/practice$ cat awkscript
+#Begin Processing
+BEGIN {FS = ","; RS = "#";print "-----Script started------"}
+{
+
+#boady Procesing
+print $1 " " $3
+}
+
+#End processing
+
+END {print "--------Script Finished--------"}
+Love@!=Love:~/practice$ awk -f awkscript test1
+-----Script started------
+Name Maths
+Rahul 56
+kapil 89
+Naveen 99
+Charmi 82
+--------Script Finished--------
+
+--Example of ORS:
+Love@!=Love:~/practice$ cat awkscript
+#Begin Processing
+BEGIN {RS = "#"; ORS = "\n";print "-----Script started------"}
+{
+
+#boady Procesing
+print $0
+}
+
+#End processing
+
+END {print "--------Script Finished--------"}
+Love@!=Love:~/practice$ awk -f awkscript test1
+-----Script started------
+Name,Surname,Maths,Physics,Chemistry
+Rahul,shah,56,78,82
+kapil,sharma,89,43,76
+Naveen,hegde,99,96,82
+Charmi,joshi,82,80,85
+--------Script Finished--------
+
+--NF Example:
+#Begin Processing
+BEGIN {RS = "#"; ORS = "\n";print "-----Script started------"}
+{
+
+#boady Procesing
+if( NF == 5)
+print $0
+else
+print "Less than 5 fields"
+}
+
+#End processing
+
+END {print "--------Script Finished--------"}
+-output should be as below.
+-----Script started------
+Less than 5 fields
+Less than 5 fields
+Less than 5 fields
+Less than 5 fields
+Less than 5 fields
+Less than 5 fields
+--------Script Finished--------
