@@ -9,7 +9,7 @@ Each row is record and record in collection of fields.
 
 => Syntex of AWK:
 awk [options] 'pattern {action}' input_file
-Bascally awk program consists of patterns and actions.If pattern is missing the action is applied to all line, or else, if the action is missing , the matched line is printed.There are two types of buffer used in AWK- the record buffer and field buffer. The letter is denoted as $1,$2,...,$n, where n indicates the field number.The record buffer is denoted as $0, which indicates whole record.
+Basically awk program consists of patterns and actions.If pattern is missing the action is applied to all line, or else, if the action is missing , the matched line is printed.There are two types of buffer used in AWK- the record buffer and field buffer. The letter is denoted as $1,$2,...,$n, where n indicates the field number.The record buffer is denoted as $0, which indicates whole record.
 
 => Simple Example::
 
